@@ -75,11 +75,13 @@ def read_graph(filename):
             line_name = parts[0].strip()
             stations = parts[1].strip().split('"')
             stations = [s for s in stations if s != '']
+            #print(f"Parsing line: {line_name} with stations: {stations}")
             for i in range(0, len(stations) - 2, 2):
                 station_name = stations[i]
                 travel_time = int(stations[i+1].strip())
                 next_station = stations[i+2]
                 graph.add_edge(line_name, station_name, travel_time, next_station)
+                #print(f"Added edge: {station_name} -> {next_station} with travel time {travel_time} on line {line_name}")
     return graph
 
 
@@ -105,6 +107,8 @@ def dijkstra(graph, start, goal):
         visited.append(current_vertex)
         current_distance = distances[current_vertex]
 
+        #print(f"Visiting: {current_vertex} with current distance: {current_distance}")
+
         for edge in graph.get_vertex(current_vertex).neighbours:
             neighbor = edge.neighbour_station_name
             weight = edge.traveltime
@@ -115,6 +119,7 @@ def dijkstra(graph, start, goal):
                 distances[neighbor] = distance
                 previous_vertices[neighbor] = current_vertex
                 previous_lines[neighbor] = line
+                #print(f"Updated distance for {neighbor} to {distance} via line {line}")
 
         current_vertex = find_min_distance_vertex(distances, visited)
         if current_vertex == goal:
@@ -128,7 +133,8 @@ def dijkstra(graph, start, goal):
         path.append(current_vertex)
         lines.append(previous_lines[current_vertex])
         current_vertex = previous_vertices[current_vertex]
-    path.append(start)
+    if path:  # Ensure the start vertex is added only if a path exists
+        path.append(start)
     path.reverse()
     lines.reverse()
     return path, lines, total_cost
@@ -136,6 +142,13 @@ def dijkstra(graph, start, goal):
 
 def find_path(filename, start, goal):
     graph = read_graph(filename)
+    if start not in graph.vertices:
+        print(f"Error: Start station '{start}' not found in the graph.")
+        return
+    if goal not in graph.vertices:
+        print(f"Error: Goal station '{goal}' not found in the graph.")
+        return
+
     path, lines, total_cost = dijkstra(graph, start, goal)
 
     if path:
