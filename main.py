@@ -1,4 +1,5 @@
 import sys
+import timeit
 
 class Node:
     def __init__(self, next=None):
@@ -165,7 +166,7 @@ def find_path(filename, start, goal):
         print(f"No path found from {start} to {goal}")
 
 
-if __name__ == '__main__':
+def main():
     if len(sys.argv) != 4:
         print("Usage: find_path filename_graph start_station goal_station")
     else:
@@ -173,3 +174,18 @@ if __name__ == '__main__':
         start_station = sys.argv[2]
         goal_station = sys.argv[3]
         find_path(filename_graph, start_station, goal_station)
+
+if __name__ == '__main__':
+    execution_number = 10  # Number of times to be executed for the average (execution_number < 1 for no execution time measurement)
+    if execution_number > 0:
+        execution_times = []  # List to store individual execution times
+        for _ in range(execution_number):
+            execution_time = timeit.timeit(main, number=1)  # Measure individual execution time
+            execution_times.append(execution_time)
+            print(f"\nIndividual Execution time: {round(execution_time * 1000)} milliseconds")
+            print("\n")
+        
+        average_execution_time_ms = round((sum(execution_times) / execution_number) * 1000)  # Calculate average
+        print(f"Average execution time of {execution_number} executions: {average_execution_time_ms} milliseconds")
+    else:
+        main()
