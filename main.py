@@ -1,4 +1,5 @@
 import sys
+import heapq
 import timeit
 
 class Node:
@@ -102,33 +103,32 @@ def dijkstra(graph, start, goal):
 
     previous_vertices = {vertex: None for vertex in graph.vertices}
     previous_lines = {vertex: None for vertex in graph.vertices}
-    visited = []
+    visited = set()
 
-    current_vertex = start
+    priority_queue = [(0, start)]  # (distance, vertex)
     # Iterate through the graph until the goal is reached or all vertices are visited	
-    while current_vertex is not None:
-        visited.append(current_vertex)
-        current_distance = distances[current_vertex]
+    while priority_queue:
+        current_distance, current_vertex = heapq.heappop(priority_queue)
 
-        # Iterate through every neighbour of the current vertex and update distances/weight to neighbours
+        if current_vertex in visited:
+            continue
+
+        visited.add(current_vertex)
+
+        if current_vertex == goal:
+            break
+
         for edge in graph.get_vertex(current_vertex).neighbours:
             neighbor = edge.neighbour_station_name
             weight = edge.traveltime
             line = edge.line_name
             distance = current_distance + weight
-            # Update the distance if a shorter path is found	
+
             if distance < distances[neighbor]:
                 distances[neighbor] = distance
-                # Store the previous vertex and line for backtracking/reconstructing the path later
                 previous_vertices[neighbor] = current_vertex
                 previous_lines[neighbor] = line
-
-        # Find the next vertex to visit		
-        current_vertex = find_min_distance_vertex(distances, visited)
-        # If the goal is reached, exit the loop		
-        if current_vertex == goal:
-            break
-
+                heapq.heappush(priority_queue, (distance, neighbor))
     path = []
     lines = []
     total_cost = distances[goal]
@@ -180,7 +180,7 @@ def main():
         find_path(filename_graph, start_station, goal_station)
 
 if __name__ == '__main__':
-    execution_number = 0  # Number of times to be executed for the average (execution_number < 1 for no execution time measurement)
+    execution_number = 100  # Number of times to be executed for the average (execution_number < 1 for no execution time measurement)
     if execution_number > 0:
         execution_times = []  # List to store individual execution times
         for _ in range(execution_number):
