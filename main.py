@@ -181,7 +181,7 @@ def main():
         find_path(filename_graph, start_station, goal_station)
 
 if __name__ == '__main__':
-    execution_number = 100  # Number of times to be executed for the average (execution_number < 1 for no execution time measurement)
+    execution_number = 0  # Number of times to be executed for the average (execution_number < 1 for no execution time measurement)
     if execution_number > 0:
         execution_times = []  # List to store individual execution times
         for _ in range(execution_number):
