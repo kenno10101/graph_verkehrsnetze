@@ -9,9 +9,8 @@ class Node:
         self.next = new_next_node
 
 
-class Vertex(Node):
-    def __init__(self, station_name: str, next=None):
-        super().__init__(next)
+class Vertex():
+    def __init__(self, station_name: str):
         self.station_name = station_name
         self.neighbours = LinkedList()  # linked list of edges
 
@@ -97,32 +96,36 @@ def find_min_distance_vertex(distances, visited):
 
 
 def dijkstra(graph, start, goal):
+    # Initialize list distances from the start node to all other nodes in graph with start = 0 and all other infinity
     distances = {vertex: float('infinity') for vertex in graph.vertices}
     distances[start] = 0
+
     previous_vertices = {vertex: None for vertex in graph.vertices}
     previous_lines = {vertex: None for vertex in graph.vertices}
     visited = []
 
     current_vertex = start
+    # Iterate through the graph until the goal is reached or all vertices are visited	
     while current_vertex is not None:
         visited.append(current_vertex)
         current_distance = distances[current_vertex]
 
-        #print(f"Visiting: {current_vertex} with current distance: {current_distance}")
-
+        # Iterate through every neighbour of the current vertex and update distances/weight to neighbours
         for edge in graph.get_vertex(current_vertex).neighbours:
             neighbor = edge.neighbour_station_name
             weight = edge.traveltime
             line = edge.line_name
             distance = current_distance + weight
-
+            # Update the distance if a shorter path is found	
             if distance < distances[neighbor]:
                 distances[neighbor] = distance
+                # Store the previous vertex and line for backtracking/reconstructing the path later
                 previous_vertices[neighbor] = current_vertex
                 previous_lines[neighbor] = line
-                #print(f"Updated distance for {neighbor} to {distance} via line {line}")
 
+        # Find the next vertex to visit		
         current_vertex = find_min_distance_vertex(distances, visited)
+        # If the goal is reached, exit the loop		
         if current_vertex == goal:
             break
 
@@ -130,6 +133,7 @@ def dijkstra(graph, start, goal):
     lines = []
     total_cost = distances[goal]
     current_vertex = goal
+    # Reconstruct the path by backtracking from the goal to the start vertex
     while previous_vertices[current_vertex]:
         path.append(current_vertex)
         lines.append(previous_lines[current_vertex])
@@ -176,7 +180,7 @@ def main():
         find_path(filename_graph, start_station, goal_station)
 
 if __name__ == '__main__':
-    execution_number = 10  # Number of times to be executed for the average (execution_number < 1 for no execution time measurement)
+    execution_number = 0  # Number of times to be executed for the average (execution_number < 1 for no execution time measurement)
     if execution_number > 0:
         execution_times = []  # List to store individual execution times
         for _ in range(execution_number):
