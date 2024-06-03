@@ -76,13 +76,11 @@ def read_graph(filename):
             line_name = parts[0].strip()
             stations = parts[1].strip().split('"')
             stations = [s for s in stations if s != '']
-            #print(f"Parsing line: {line_name} with stations: {stations}")
             for i in range(0, len(stations) - 2, 2):
                 station_name = stations[i]
                 travel_time = int(stations[i+1].strip())
                 next_station = stations[i+2]
                 graph.add_edge(line_name, station_name, travel_time, next_station)
-                #print(f"Added edge: {station_name} -> {next_station} with travel time {travel_time} on line {line_name}")
     return graph
 
 
