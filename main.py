@@ -125,12 +125,12 @@ def dijkstra(graph, start, goal):
             weight = edge.traveltime
             line = edge.line_name
             distance = current_distance + weight
-
+            # Update the distance if a shorter path is found
             if distance < distances[neighbor]:
                 distances[neighbor] = distance
-                # Store the previous vertex and line for backtracking/reconstructing the path later
                 previous_vertices[neighbor] = current_vertex
                 previous_lines[neighbor] = line
+                # Pushes the updated distance and closest neighbour into the priority queue
                 heapq.heappush(priority_queue, (distance, neighbor))
     path = []
     lines = []
